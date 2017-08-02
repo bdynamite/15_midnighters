@@ -1,5 +1,4 @@
 import requests
-import pprint
 import datetime
 import pytz
 import collections
@@ -39,7 +38,6 @@ def print_midnighters(midnighters):
 if __name__ == '__main__':
     api_data = load_attempts()
     data_with_time = convert_data(api_data)
-    pprint.pprint(data_with_time)
     midnighters = get_midnighters(data_with_time)
     print_midnighters(midnighters)
 

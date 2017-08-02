@@ -24,6 +24,7 @@ Following users send their solutions after midnight:
 "RamusikValery" 3 times
 "vergeev" 2 times
 ...
+```
 
 
 # Project Goals
