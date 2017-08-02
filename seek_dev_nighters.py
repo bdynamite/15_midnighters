@@ -7,10 +7,10 @@ import tqdm
 
 def load_attempts():
     pages = 10
-    url = 'https://devman.org/api/challenges/solution_attempts/?page={}'
+    url = 'https://devman.org/api/challenges/solution_attempts/'
     records_list = []
-    for page in tqdm.tqdm(range(1, pages + 1), desc='collecting data'):
-        responce = requests.get(url=url.format(page))
+    for page in tqdm.tqdm(range(pages), desc='collecting data'):
+        responce = requests.get(url=url.format(page), params={'page': page + 1})
         records_list.extend(responce.json()['records'])
     return records_list
 
