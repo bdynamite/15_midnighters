@@ -6,13 +6,15 @@ import tqdm
 
 
 def load_attempts():
-    pages = 10
     url = 'https://devman.org/api/challenges/solution_attempts/'
-    records_list = []
-    for page in tqdm.tqdm(range(pages), desc='collecting data'):
-        responce = requests.get(url=url.format(page), params={'page': page + 1})
-        records_list.extend(responce.json()['records'])
-    return records_list
+    page = 1
+    while True:
+        response = requests.get(url=url.format(page), params={'page': page}).json()
+        yield response['records']
+        number_of_pages = response['number_of_pages']
+        page += 1
+        if page > int(number_of_pages):
+            break
 
 
 def convert_data(data_list):
@@ -25,19 +27,18 @@ def convert_data(data_list):
     return converted_list
 
 
-def get_midnighters(data_list):
-    midnighters = collections.Counter([x[0] for x in data_list if x[1].hour in range(5)])
-    return midnighters
+def get_owls(data_list):
+    return collections.Counter([user for user, time in data_list if 0 <= time.hour < 5])
 
 
-def print_midnighters(midnighters):
+def print_owls(users_counter):
     print('Following users send their solutions after midnight:')
-    print('\n'.join(['"{}" {} times'.format(x[0], x[1])
-                     for x in sorted(midnighters.items(), key=lambda y: y[1], reverse=True)]))
+    print('\n'.join(['"{}" {} times'.format(name, count)
+                     for name, count in sorted(users_counter.items(), key=lambda x: x[1], reverse=True)]))
 
 if __name__ == '__main__':
-    api_data = load_attempts()
+    api_data = []
+    [api_data.extend(x) for x in tqdm.tqdm(load_attempts(), desc='collecting data')]
     data_with_time = convert_data(api_data)
-    midnighters = get_midnighters(data_with_time)
-    print_midnighters(midnighters)
-
+    owls = get_owls(data_with_time)
+    print_owls(owls)
